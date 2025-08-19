@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTrack Dashboard - Subjects</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #84a9ff 0%, #f5f8ff 100%);
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background-color: #00167a;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-center {
+            color: white;
+            font-size: 40px;
+            font-style: italic;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px 20px;
+            min-height: calc(100vh - 60px);
+            transition: margin-left 0.3s ease;
+        }
+
+        .subject-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 22, 122, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 180px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #00167a, #4e73df);
+        }
+
+        .subject-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 22, 122, 0.25);
+        }
+
+        .subject-name {
+            color: #00167a;
+            font-size: 28px;
+            font-weight: 800;
+            margin: 15px 0 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .subject-abbr {
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .subject-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-icon i {
+            font-size: 32px;
+            color: #00167a;
+        }
+
+        /* Different colors for different subjects */
+        .subject-card:nth-child(1)::before { background: linear-gradient(90deg, #4e73df, #00167a); }
+        .subject-card:nth-child(2)::before { background: linear-gradient(90deg, #1cc88a, #13855c); }
+        .subject-card:nth-child(3)::before { background: linear-gradient(90deg, #36b9cc, #258391); }
+        .subject-card:nth-child(4)::before { background: linear-gradient(90deg, #f6c23e, #c99c0e); }
+        .subject-card:nth-child(5)::before { background: linear-gradient(90deg, #e74a3b, #be2617); }
+        .subject-card:nth-child(6)::before { background: linear-gradient(90deg, #858796, #5a5c69); }
+        .subject-card:nth-child(7)::before { background: linear-gradient(90deg, #f8f9fc, #b7b9cc); }
+        .subject-card:nth-child(8)::before { background: linear-gradient(90deg, #4e73df, #00167a); }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .subject-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .subject-card {
+                padding: 20px;
+                min-height: 160px;
+            }
+            
+            .subject-name {
+                font-size: 24px;
+            }
+            
+            .nav-center {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .subject-container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            
+            .top-nav {
+                padding: 0 15px;
+            }
+            
+            .nav-center {
+                font-size: 30px;
+            }
+        }
+
+        .page-title {
+            text-align: center;
+            color: #00167a;
+            margin: 20px 0;
+            font-weight: 700;
+            font-size: 32px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="student-profile.html" class="text-decoration-none">
+            <img src="../uploads/sample.webp" alt="Profile" class="profile-pic">
+        </a>
+
+        <div class="nav-center">
+            SUBJECTS
+        </div>
+        
+        <div style="width: 40px;"></div> <!-- Spacer for balance -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="page-title">My Subjects</h1>
+        
+        <div class="subject-container">
+            <!-- TLE -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3 class="subject-name">TLE</h3>
+                    <p class="subject-abbr">Technology and Livelihood Education</p>
+                </div>
+            </a>
+
+            <!-- MAPEH -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3 class="subject-name">MAPEH</h3>
+                    <p class="subject-abbr">Music, Arts, PE, and Health</p>
+                </div>
+            </a>
+
+            <!-- SCIENCE -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3 class="subject-name">SCIENCE</h3>
+                    <p class="subject-abbr">Science</p>
+                </div>
+            </a>
+
+            <!-- ENGLISH -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="subject-name">ENGLISH</h3>
+                    <p class="subject-abbr">English</p>
+                </div>
+            </a>
+
+            <!-- MATH -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="subject-name">MATH</h3>
+                    <p class="subject-abbr">Mathematics</p>
+                </div>
+            </a>
+
+            <!-- ESP -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h3 class="subject-name">ESP</h3>
+                    <p class="subject-abbr">Edukasyon sa Pagpapakatao</p>
+                </div>
+            </a>
+
+            <!-- FILIPINO -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="subject-name">FILIPINO</h3>
+                    <p class="subject-abbr">Filipino</p>
+                </div>
+            </a>
+
+            <!-- AP -->
+            <a href="student-activities.html" class="text-decoration-none">
+                <div class="subject-card">
+                    <div class="subject-icon">
+                        <i class="fas fa-globe-asia"></i>
+                    </div>
+                    <h3 class="subject-name">AP</h3>
+                    <p class="subject-abbr">Araling Panlipunan</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple animation for subject cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const subjectCards = document.querySelectorAll('.subject-card');
+            
+            subjectCards.forEach((card, index) => {
+                // Add delay based on index for staggered animation
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('animate__animated', 'animate__fadeInUp');
+            });
+        });
+    </script>
+</body>
+</html>

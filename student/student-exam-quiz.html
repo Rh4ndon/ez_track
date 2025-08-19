@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTrack Dashboard - Subjects</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #84a9ff 0%, #f5f8ff 100%);
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background-color: #00167a;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-center {
+            color: white;
+            font-size: 40px;
+            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: calc(100vh - 70px);
+            text-align: center;
+        }
+
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .subject-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .subject-card {
+                padding: 20px;
+                min-height: 160px;
+            }
+            
+            .subject-name {
+                font-size: 24px;
+            }
+            
+            .nav-center {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .subject-container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            
+            .top-nav {
+                padding: 0 15px;
+            }
+            
+            .nav-center {
+                font-size: 25px;
+            }
+        }
+
+        .page-title {
+            text-align: center;
+            color: #00167a;
+            margin: 20px 0;
+            font-weight: 700;
+            font-size: 32px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-container {
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+  
+        .nav-back {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="student-subjects.html" class="nav-back">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+
+        <div class="nav-center">
+            TLE<br>
+            <span style="font-size:15px;">EXAM & sQUIQuizzes</span>
+        </div>
+        
+        <div class="dropdown"></div>
+            <button class="btn btn-light dropdown-toggle" type="button" id="activityDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="activityDropdown">
+            <li><a class="dropdown-item" href="student-activities.html">Activities</a></li>
+            <li><a class="dropdown-item" href="student-exam-quiz.html">Exams and Quizzes</a></li>
+            <li><a class="dropdown-item" href="student-performance.html">Performance Task</a></li>
+            </ul>
+        </div>
+    </nav>
+
+      <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Table of exams & Quizzes with each cell is checkbox -->
+
+        <div class="profile-container">
+            <h1 class="page-title">Exams & Quizzes</h1>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Exams & Quizzes</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Exam 1</td>
+                            <td><input type="checkbox" checked></td>
+                        </tr>
+                        <tr>
+                            <td>Exam 2</td>
+                            <td><input type="checkbox"></td>
+                        </tr>
+                        <tr>
+                            <td>Exam 3</td>
+                            <td><input type="checkbox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+          
+
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

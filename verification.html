@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTrack Verify Code</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .container-fluid {
+            height: 100vh;
+            padding: 0;
+        }
+
+        .top-section {
+            background: linear-gradient(180deg, #84a9ff 0%, #f5f8ff 100%);
+            height: 25vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+            position: relative;
+        }
+
+        .bottom-section {
+            background-color: #00167a;
+            border-radius: 20px 20px 0 0;
+            height: 75vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 20px 20px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #00167a;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            color: #00167a;
+            text-decoration: none;
+        }
+
+        .verify-title {
+            color: #00167a;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+           
+            border-radius: 50%;
+            padding: 15px;
+       
+        }
+
+        .logo-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-circle img {
+            height: 111%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .verification-container {
+            width: 100%;
+            max-width: 320px;
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .verification-text {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .code-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .code-input {
+            width: 45px;
+            height: 55px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00167a;
+        }
+
+        .code-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(132, 169, 255, 0.5);
+        }
+
+        .verify-btn {
+            background: white;
+            border: 2px solid #00167a;
+            color: #00167a;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 15px 40px;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 200px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .verify-btn:hover {
+            background: #00167a;
+            color: white;
+            border-color: #00167a;
+        }
+
+        .resend-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 10px 30px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .resend-btn:hover {
+            background: white;
+            color: #00167a;
+        }
+
+        .timer {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 576px) {
+            .logo-circle {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .verify-title {
+                font-size: 38px;
+            }
+            
+            .verification-container {
+                max-width: 280px;
+                margin-top: 60px;
+            }
+
+            .code-input {
+                width: 40px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .code-input-container {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Section with Gradient -->
+        <div class="top-section">
+            <a href="login.html" class="back-btn">← Back</a>
+            <h1 class="verify-title">Verify Code</h1>
+        </div>
+
+        <!-- Logo Container (overlapping both sections) -->
+        <div class="logo-container">
+            <div class="logo-circle">
+                <img src="img/logo.png" alt="EZTrack Logo">
+            </div>
+        </div>
+
+        <!-- Bottom Section with Blue Background -->
+        <div class="bottom-section">
+            <div class="verification-container">
+                <!-- Verification Message -->
+                <p class="verification-text">
+                    An authentication code has been sent to your email
+                </p>
+
+                <!-- Code Input Fields -->
+                <div class="code-input-container">
+                    <input type="text" class="code-input" maxlength="1" id="code1">
+                    <input type="text" class="code-input" maxlength="1" id="code2">
+                    <input type="text" class="code-input" maxlength="1" id="code3">
+                    <input type="text" class="code-input" maxlength="1" id="code4">
+                    <input type="text" class="code-input" maxlength="1" id="code5">
+                    <input type="text" class="code-input" maxlength="1" id="code6">
+                </div>
+
+                <!-- Verify Button -->
+                <button type="button" class="btn verify-btn" onclick="verifyCode()">VERIFY CODE</button>
+
+                <!-- Resend Button -->
+                <button type="button" class="btn resend-btn" onclick="resendCode()">RESEND CODE</button>
+
+                <!-- Timer -->
+                <div class="timer" id="timer">00:30</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-focus and navigation between input fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.code-input');
+            
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    // Only allow digits
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    
+                    // Move to next input if current is filled
+                    if (e.target.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    // Move to previous input on backspace
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text');
+                    const digits = pasteData.replace(/[^0-9]/g, '').slice(0, 6);
+                    
+                    // Fill inputs with pasted digits
+                    for (let i = 0; i < digits.length && i < inputs.length; i++) {
+                        inputs[i].value = digits[i];
+                    }
+                    
+                    // Focus on the next empty input or the last one
+                    const nextIndex = Math.min(digits.length, inputs.length - 1);
+                    inputs[nextIndex].focus();
+                });
+            });
+
+            // Focus first input on load
+            inputs[0].focus();
+
+            // Start countdown timer
+            startTimer(30);
+        });
+
+        function verifyCode() {
+            // Create modal HTML
+            const modalHtml = `
+            <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                <h5 class="modal-title" id="roleModalLabel">Select Your Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body text-center">
+                <button type="button" class="btn btn-primary m-2" id="studentBtn">Student</button>
+                <button type="button" class="btn btn-success m-2" id="teacherBtn">Teacher</button>
+                <button type="button" class="btn btn-warning m-2" id="adminBtn">Admin</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            `;
+
+            // Append modal to body if not already present
+            if (!document.getElementById('roleModal')) {
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            }
+
+            // Show modal
+            const roleModal = new bootstrap.Modal(document.getElementById('roleModal'));
+            roleModal.show();
+
+            // Add event listeners for buttons
+            document.getElementById('studentBtn').onclick = function() {
+            window.location.href = 'student/student-subjects.html';
+            };
+            document.getElementById('teacherBtn').onclick = function() {
+            window.location.href = 'teacher/teacher-sections.html';
+            };
+            document.getElementById('adminBtn').onclick = function() {
+            window.location.href = 'admin/admin-dashboard.html';
+            };
+        }
+
+        /*
+        function verifyCode() {
+            const inputs = document.querySelectorAll('.code-input');
+            const code = Array.from(inputs).map(input => input.value).join('');
+            
+            if (code.length !== 6) {
+                alert('Please enter all 6 digits');
+                return;
+            }
+            
+            // Here you would typically send the code to your backend for verification
+            console.log('Verification code:', code);
+            alert('Code submitted: ' + code);
+        }
+            */
+
+        function resendCode() {
+            // Reset timer and resend code
+            startTimer(30);
+            alert('New verification code sent!');
+        }
+
+        function startTimer(seconds) {
+            const timerElement = document.getElementById('timer');
+            let timeLeft = seconds;
+
+            const countdown = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const remainingSeconds = timeLeft % 60;
+                
+                timerElement.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerElement.textContent = '00:00';
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

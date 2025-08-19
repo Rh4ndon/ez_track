@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzTrack Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #84a9ff 0%, #f5f8ff 100%);
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background-color: #00167a;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: fixed;
+            top: 60px;
+            left: -280px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background-color: #bedafd;
+            z-index: 999;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: #00167a;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(0, 22, 122, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(0, 22, 122, 0.1);
+            color: #00167a;
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: rgba(0, 22, 122, 0.2);
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            fill: #00167a;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px 20px;
+            min-height: calc(100vh - 60px);
+            transition: margin-left 0.3s ease;
+        }
+
+        .section-container a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        
+        .section-card {
+            background: white;
+            
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 22, 122, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 22, 122, 0.2);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stat-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: #00167a;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .stat-number {
+            color: #00167a;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Overlay for mobile menu */
+        .menu-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 60px);
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .menu-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .section-card {
+                padding: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .stat-number {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <button class="menu-btn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="page-title">
+                <svg class="menu-icon" height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.001 512.001" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path style="fill:#BD6428;" d="M112,64.001h288c17.672,0,32,14.328,32,32v384c0,17.672-14.328,32-32,32H112 c-17.672,0-32-14.328-32-32v-384C80,78.329,94.328,64.001,112,64.001z"></path> <path style="fill:#F5F6F6;" d="M120,480.001c-4.416,0-8-3.584-8-8v-368c0-4.416,3.584-8,8-8h272c4.416,0,8,3.584,8,8v288l-88,88H120 z"></path> <path style="fill:#A35623;" d="M176,96.001h-16v-16c0-8.84,7.16-16,16-16l0,0V96.001z"></path> <path style="fill:#9BA7AF;" d="M212,224.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,229.377,205.376,224.001,212,224.001z"></path> <path style="fill:#CECECE;" d="M400,392.001h-80c-4.416,0-8,3.584-8,8v80L400,392.001z"></path> <path style="fill:#D17F4D;" d="M88,88.001L88,88.001c4.416,0,8,3.584,8,8v264c0,4.416-3.584,8-8,8l0,0c-4.416,0-8-3.584-8-8v-264 C80,91.585,83.584,88.001,88,88.001z"></path> <g> <path style="fill:#E9E9E9;" d="M304,408.001v16c0,4.416-3.584,8-8,8l0,0c-4.416,0-8,3.584-8,8s-3.584,8-8,8h-8 c-4.416,0-8,3.584-8,8s-3.584,8-8,8H112v8c0,4.416,3.584,8,8,8h192v-80C307.584,400.001,304,403.585,304,408.001z"></path> <path style="fill:#E9E9E9;" d="M392,96.001H160c0.128,2.4,0.128,4.8,0,7.2c-0.44,8.824,6.352,16.336,15.176,16.776 c0.28,0.016,0.552,0.024,0.824,0.024h192c8.84,0,16,7.16,16,16v24l0,0c0,8.84,7.16,16,16,16l0,0v-72 C400,99.585,396.416,96.001,392,96.001z"></path> </g> <path style="fill:#9BA7AF;" d="M308.72,45.121c-6.96-2.872-12.232-8.76-14.32-16c-6.184-21.208-28.392-33.384-49.6-27.2 c-13.12,3.824-23.376,14.08-27.2,27.2c-2.088,7.24-7.36,13.128-14.32,16l-17.2,6.88c-6.064,2.416-10.056,8.272-10.08,14.8v29.2 c0,8.84,7.16,16,16,16h128c8.84,0,16-7.16,16-16v-29.2c-0.024-6.528-4.016-12.384-10.08-14.8L308.72,45.121z M256,56.001 c-8.84,0-16-7.16-16-16s7.16-16,16-16c8.84,0,16,7.16,16,16S264.84,56.001,256,56.001z"></path> <path style="fill:#72818B;" d="M312,64.001c-4.416,0-8,3.584-8,8l0,0c0,4.416-3.584,8-8,8h-16c-4.416,0-8,3.584-8,8l0,0 c0,4.416-3.584,8-8,8h-88c0,8.84,7.16,16,16,16h128c8.84,0,16-7.16,16-16v-32H312z"></path> <path style="fill:#AFBABF;" d="M225.04,40.001c-4.416,0.144-8.112-3.328-8.248-7.744c-0.024-0.76,0.064-1.52,0.248-2.256 c4.584-17.744,20.632-30.104,38.96-30c4.416,0,8,3.584,8,8s-3.584,8-8,8c-10.96-0.016-20.544,7.392-23.28,18 C231.816,37.513,228.664,39.969,225.04,40.001z"></path> <path style="fill:#A35623;" d="M400,80.001h-32c-8.84,0-16-7.16-16-16h-16v32h56c4.416,0,8,3.584,8,8v288l-88,88H120 c0,8.84,7.16,16,16,16h194.72c8.488,0.008,16.632-3.36,22.64-9.36l53.28-53.28c6-6.008,9.368-14.152,9.36-22.64V96.001 C416,87.169,408.84,80.001,400,80.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="236.001" r="12"></circle> <path style="fill:#9BA7AF;" d="M212,176.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,181.377,205.376,176.001,212,176.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="188.001" r="12"></circle> <path style="fill:#9BA7AF;" d="M212,272.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,277.377,205.376,272.001,212,272.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="284.001" r="12"></circle> <path style="fill:#9BA7AF;" d="M212,320.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,325.377,205.376,320.001,212,320.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="332.001" r="12"></circle> </g>
+                </svg>
+                SECTIONS
+            </div>
+        </div>
+        <img src="../uploads/sample.webp" alt="Profile" class="profile-pic">
+    </nav>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <a href="admin-dashboard.html" class="menu-item">
+            <svg class="menu-icon" viewBox="0 -297 1618 1618" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M1495.104759 90.099858C1495.104759 40.373123 1454.731636 0 1405.004901 0H203.686957C153.960221 0 113.587099 40.373123 113.587099 90.099858v810.890624h1381.51766V90.099858z" fill="#4762AF"></path><path d="M1435.040885 108.345676c0-23.025834-18.695083-41.71687-41.720917-41.71687H221.932775c-23.025834 0-41.71687 18.691036-41.71687 41.71687v792.644806h1254.82498V108.345676z" fill="#FFFFFF"></path><path d="M927.76019 66.628806h-240.263589v18.780079a18.788174 18.788174 0 0 0 18.776031 18.776032h202.707479a18.788174 18.788174 0 0 0 18.780079-18.776032v-18.780079zM1615.236553 906.99687c0-3.314846-2.691542-6.006387-6.006387-6.006388H6.022577c-3.314846 0-6.006387 2.691542-6.006387 6.006388v54.057486c0 33.152506 26.915415 60.067921 60.067921 60.067921h1495.088569c33.148458 0 60.063874-26.915415 60.063873-60.067921v-54.057486z" fill="#4762AF"></path><path d="M987.824063 888.411067h-360.395383c0 31.14498 25.2843 56.425233 56.425233 56.425233h247.544917c31.140933 0 56.425233-25.280253 56.425233-56.425233z" fill="#FFFFFF"></path><path d="M867.234909 77.55687m-10.928063 0a10.928063 10.928063 0 1 0 21.856126 0 10.928063 10.928063 0 1 0-21.856126 0Z" fill="#4762AF"></path></g>
+            </svg>
+            DASHBOARD
+        </a>
+        <a href="admin-sections.html" class="menu-item active">
+            <svg class="menu-icon" height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.001 512.001" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path style="fill:#BD6428;" d="M112,64.001h288c17.672,0,32,14.328,32,32v384c0,17.672-14.328,32-32,32H112 c-17.672,0-32-14.328-32-32v-384C80,78.329,94.328,64.001,112,64.001z"></path> <path style="fill:#F5F6F6;" d="M120,480.001c-4.416,0-8-3.584-8-8v-368c0-4.416,3.584-8,8-8h272c4.416,0,8,3.584,8,8v288l-88,88H120 z"></path> <path style="fill:#A35623;" d="M176,96.001h-16v-16c0-8.84,7.16-16,16-16l0,0V96.001z"></path> <path style="fill:#9BA7AF;" d="M212,224.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,229.377,205.376,224.001,212,224.001z"></path> <path style="fill:#CECECE;" d="M400,392.001h-80c-4.416,0-8,3.584-8,8v80L400,392.001z"></path> <path style="fill:#D17F4D;" d="M88,88.001L88,88.001c4.416,0,8,3.584,8,8v264c0,4.416-3.584,8-8,8l0,0c-4.416,0-8-3.584-8-8v-264 C80,91.585,83.584,88.001,88,88.001z"></path> <g> <path style="fill:#E9E9E9;" d="M304,408.001v16c0,4.416-3.584,8-8,8l0,0c-4.416,0-8,3.584-8,8s-3.584,8-8,8h-8 c-4.416,0-8,3.584-8,8s-3.584,8-8,8H112v8c0,4.416,3.584,8,8,8h192v-80C307.584,400.001,304,403.585,304,408.001z"></path> <path style="fill:#E9E9E9;" d="M392,96.001H160c0.128,2.4,0.128,4.8,0,7.2c-0.44,8.824,6.352,16.336,15.176,16.776 c0.28,0.016,0.552,0.024,0.824,0.024h192c8.84,0,16,7.16,16,16v24l0,0c0,8.84,7.16,16,16,16l0,0v-72 C400,99.585,396.416,96.001,392,96.001z"></path> </g> <path style="fill:#9BA7AF;" d="M308.72,45.121c-6.96-2.872-12.232-8.76-14.32-16c-6.184-21.208-28.392-33.384-49.6-27.2 c-13.12,3.824-23.376,14.08-27.2,27.2c-2.088,7.24-7.36,13.128-14.32,16l-17.2,6.88c-6.064,2.416-10.056,8.272-10.08,14.8v29.2 c0,8.84,7.16,16,16,16h128c8.84,0,16-7.16,16-16v-29.2c-0.024-6.528-4.016-12.384-10.08-14.8L308.72,45.121z M256,56.001 c-8.84,0-16-7.16-16-16s7.16-16,16-16c8.84,0,16,7.16,16,16S264.84,56.001,256,56.001z"></path> <path style="fill:#72818B;" d="M312,64.001c-4.416,0-8,3.584-8,8l0,0c0,4.416-3.584,8-8,8h-16c-4.416,0-8,3.584-8,8l0,0 c0,4.416-3.584,8-8,8h-88c0,8.84,7.16,16,16,16h128c8.84,0,16-7.16,16-16v-32H312z"></path> <path style="fill:#AFBABF;" d="M225.04,40.001c-4.416,0.144-8.112-3.328-8.248-7.744c-0.024-0.76,0.064-1.52,0.248-2.256 c4.584-17.744,20.632-30.104,38.96-30c4.416,0,8,3.584,8,8s-3.584,8-8,8c-10.96-0.016-20.544,7.392-23.28,18 C231.816,37.513,228.664,39.969,225.04,40.001z"></path> <path style="fill:#A35623;" d="M400,80.001h-32c-8.84,0-16-7.16-16-16h-16v32h56c4.416,0,8,3.584,8,8v288l-88,88H120 c0,8.84,7.16,16,16,16h194.72c8.488,0.008,16.632-3.36,22.64-9.36l53.28-53.28c6-6.008,9.368-14.152,9.36-22.64V96.001 C416,87.169,408.84,80.001,400,80.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="236.001" r="12"></circle> <path style="fill:#9BA7AF;" d="M212,176.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,181.377,205.376,176.001,212,176.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="188.001" r="12"></circle> <path style="fill:#9BA7AF;" d="M212,272.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,277.377,205.376,272.001,212,272.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="284.001" r="12"></circle> <path style="fill:#9BA7AF;" d="M212,320.001h136c6.624,0,12,5.376,12,12l0,0c0,6.624-5.376,12-12,12H212c-6.624,0-12-5.376-12-12 l0,0C200,325.377,205.376,320.001,212,320.001z"></path> <circle style="fill:#EE2C39;" cx="164" cy="332.001" r="12"></circle> </g>
+            </svg>
+            SECTIONS
+        </a>
+        <a href="admin-teachers.html" class="menu-item">
+            <svg class="menu-icon" fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 489.38 489.38" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="XMLID_129_"> 
+                <path id="XMLID_134_" d="M473.725,5.656H213.576c-8.655,0-15.655,7.022-15.655,15.664v110.484l11.319-13.234 c5.375-6.292,12.461-10.172,19.992-11.793V36.978h228.836v204.531H229.233v-34.238l-7.05,8.244 c-6.161,7.189-14.858,11.65-24.262,12.529v29.124c0,8.642,7,15.655,15.655,15.655h84.489L255.141,467.7 c-1.923,8.739,3.6,17.382,12.346,19.31c8.667,1.904,17.382-3.601,19.287-12.331l44.457-201.855h25.844l44.457,201.855 c1.666,7.557,8.369,12.714,15.803,12.705c1.154,0,2.334-0.117,3.502-0.374c8.746-1.928,14.268-10.57,12.328-19.31l-42.92-194.877 h83.481c8.647,0,15.655-7.013,15.655-15.655V21.32C489.38,12.678,482.372,5.656,473.725,5.656z"></path> <path id="XMLID_132_" d="M349.368,97.116c-1.234-3.11-4.732-4.637-7.84-3.406l-92.234,32.555 c-8.465-6.554-20.678-5.383-27.737,2.827l-29.267,34.178l-25.951-22.245c0.171,1.837,0.56,3.622,0.56,5.507v48.291l14.438,12.371 c8.568,7.338,21.385,6.204,28.549-2.198l34.842-40.743l28.1-16.439l73.951-43.267C349.336,103.073,350.469,99.923,349.368,97.116z"></path> <path id="XMLID_131_" d="M109.928,105.776H92.547c-13.308,0-25.01,6.468-32.448,16.327l-53.352,49.12 c-8.313,7.405-9.067,20.232-1.581,28.595l43.528,48.585c7.421,8.309,20.267,9.044,28.579,1.576 c8.334-7.469,9.038-20.262,1.57-28.586l-30.003-33.504l42.616-38.134l-24.82,33.721l24.279,27.107 c13.416,14.992,12.151,38.027-2.834,51.453c-10.231,9.172-24.193,11.324-36.297,7.094c0,0,0.188,93.659,0.188,193.962 c0,13.416,10.874,24.291,24.291,24.291c13.403,0,24.291-10.875,24.291-24.291c0-100.272,0-43.051,0-144.771h16.203 c0,101.646,0,44.468,0,144.771c0,7.004-1.953,13.49-5.067,19.231c4.076,3.135,9.148,5.06,14.676,5.06 c13.424,0,24.298-10.875,24.298-24.291c0-100.272,0.031-58.237,0.031-316.561C150.697,124.022,132.45,105.776,109.928,105.776z"></path> <path id="XMLID_130_" d="M79.592,91.198c6.495,3.376,13.787,5.471,21.62,5.471c7.853,0,15.145-2.095,21.659-5.477 c15.204-7.877,25.684-23.559,25.684-41.862c0-26.146-21.196-47.335-47.344-47.335c-26.144,0-47.335,21.189-47.335,47.335 C53.877,67.643,64.368,83.331,79.592,91.198z"></path> </g> </g>
+            </svg>
+            TEACHERS
+        </a>
+        <a href="admin-students.html" class="menu-item">
+            <svg class="menu-icon" fill="#000000" height="200px" width="200px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 408.191 408.191" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> 
+                <path d="M363.663,294.916c0-18.823-13.48-34.545-31.289-38.05v-25.655c0-2.333-1.086-4.534-2.938-5.953 c-1.853-1.42-4.26-1.895-6.514-1.289l-8.355,2.25c-22.41-37.422-57.92-48.108-75.395-51.131v-19.483 c5.289-4.545,10.184-10.16,14.557-16.779c1.775-2.688,3.422-5.512,4.965-8.434c0.021,0.008,0.039,0.017,0.061,0.023 c1.959,0.635,3.953,0.936,5.932,0.936c9.098,0,18.565-6.189,21.023-16.258c5.732-23.485-13.5-28.398-13.83-28.458 c0.689-5.758,1.059-11.639,1.059-17.602C272.938,7.156,233.647,0,204.093,0c-29.551,0-68.838,7.156-68.838,69.035 c0,5.963,0.37,11.844,1.059,17.602c-0.329,0.06-19.763,5.184-13.831,28.461c2.559,10.043,11.927,16.255,21.025,16.255 c1.977,0,3.972-0.302,5.931-0.936c0.021-0.007,0.04-0.016,0.061-0.023c1.543,2.922,3.189,5.746,4.965,8.434 c4.373,6.619,9.267,12.234,14.555,16.779v19.483c-17.476,3.023-52.983,13.713-75.394,51.131l-8.354-2.25 c-2.254-0.604-4.661-0.13-6.513,1.289c-1.853,1.419-2.938,3.62-2.938,5.953v25.654c-17.812,3.504-31.291,19.227-31.291,38.051 c0,18.822,13.479,34.549,31.291,38.053v32.199c0,3.326,2.191,6.256,5.383,7.195l120.7,35.523c0.695,0.204,1.408,0.305,2.117,0.305 c0.025,0,0.052,0,0.077,0c0.718,0.002,1.472-0.093,2.192-0.305l120.701-35.508c3.191-0.94,5.383-3.868,5.383-7.195v-32.215 C350.184,329.465,363.663,313.738,363.663,294.916z M269.264,101.639c2.336,1.52,3.334,5.254,2.176,8.834 c-1.103,3.402-3.871,5.766-6.535,5.869C266.626,111.619,268.085,106.707,269.264,101.639z M136.752,110.474 c-1.158-3.579-0.16-7.313,2.177-8.834c1.18,5.067,2.638,9.979,4.358,14.702C140.625,116.236,137.855,113.875,136.752,110.474z M204.093,15c31.995,0,53.399,9.029,53.825,52.721c-26.49,5.475-50.976,0.613-72.852-14.498 c-12.249-8.462-20.517-18.125-24.52-23.389C169.911,18.174,185.141,15,204.093,15z M166.98,130.559 c-10.785-16.326-16.725-38.175-16.725-61.523c0-9.746,1.02-17.805,2.942-24.455c5.171,5.98,12.778,13.604,22.817,20.618 c13.961,9.756,34.738,19.657,61.55,19.657c6.219,0,12.766-0.541,19.625-1.732c-1.896,17.955-7.396,34.447-15.977,47.436 c-10.152,15.367-23.336,23.83-37.12,23.83C190.312,154.389,177.131,145.926,166.98,130.559z M177.259,189.085 c3.837-0.381,6.76-3.608,6.76-7.464v-16.475c6.406,2.791,13.149,4.242,20.074,4.242c6.927,0,13.671-1.451,20.079-4.243v16.476 c0,3.855,2.924,7.083,6.76,7.464c3.428,0.34,9.418,1.203,16.707,3.348c-3.697,11.395-22.129,20.362-43.542,20.362 c-21.414,0-39.847-8.968-43.544-20.362C167.842,190.288,173.831,189.425,177.259,189.085z M59.529,294.916 c0-10.499,6.836-19.432,16.291-22.58v45.156C66.365,314.345,59.529,305.414,59.529,294.916z M196.52,390.666l-105.7-31.108 v-118.56l105.7,28.468V390.666z M204.096,255.973L108.778,230.3c10.99-16.63,25.02-26.6,37.757-32.561 c6.21,17.444,29.267,30.056,57.563,30.056s51.345-12.613,57.552-30.06c12.738,5.96,26.773,15.931,37.764,32.565L204.096,255.973z M317.374,359.572l-105.701,31.095V269.466l105.701-28.468V359.572z M332.374,317.492v-45.156 c9.453,3.149,16.289,12.081,16.289,22.58C348.663,305.413,341.827,314.344,332.374,317.492z"></path> </g> </g> </g>
+            </svg>
+            STUDENTS
+        </a>
+        <!-- logout -->
+         <a href="../index.html" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            LOGOUT
+        </a>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- ADD SECTION Button -->
+                <div class="d-flex justify-content-center mb-4 mt-4">
+                    <button class="btn btn-primary py-2" style="width: 200px;">
+                        <i class="fa-solid fa-circle-plus"></i>&nbsp; ADD SECTION
+                    </button>
+                </div>
+
+        <div class="section-container d-flex flex-wrap align-items-center justify-content-center gap-4 p-3">
+                         
+                <!-- First Section -->
+                <a href="" class="text-decoration-none text-dark">
+                    <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h3 class="fw-bold m-0">10-Larry</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Second Section -->
+                <a href="" class="text-decoration-none text-dark">
+                    <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h3 class="fw-bold m-0">9-Peony</h3>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Third Section -->
+                <a href="" class="text-decoration-none text-dark">
+                    <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h3 class="fw-bold m-0">8-Yello-wood</h3>
+                        </div>
+                    </div>
+                </a>
+          
+        </div>
+
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            sideMenu.classList.toggle('open');
+            menuOverlay.classList.toggle('show');
+        }
+
+        function closeMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            
+            sideMenu.classList.remove('open');
+            menuOverlay.classList.remove('show');
+        }
+
+        // Close menu when clicking on menu items (for mobile)
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeMenu();
+                }
+            });
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    </script>
+</body>
+</html>
