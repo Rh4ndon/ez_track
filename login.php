@@ -219,7 +219,7 @@
         <div class="logo-container">
             <div class="logo-circle">
                 <!-- Placeholder for your logo - replace this div with your image -->
-                <img src="img/logo.png" alt="EZTrack Logo">
+                <img src="view/img/logo.png" alt="EZTrack Logo">
             </div>
         </div>
 

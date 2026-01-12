@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EzTrack Verify Code</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -71,10 +73,10 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
-           
+
             border-radius: 50%;
             padding: 15px;
-       
+
         }
 
         .logo-circle {
@@ -180,11 +182,11 @@
                 width: 180px;
                 height: 180px;
             }
-            
+
             .verify-title {
                 font-size: 38px;
             }
-            
+
             .verification-container {
                 max-width: 280px;
                 margin-top: 60px;
@@ -202,18 +204,19 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid">
         <!-- Top Section with Gradient -->
         <div class="top-section">
-            <a href="login.html" class="back-btn">← Back</a>
+            <a href="index.php" class="back-btn">← Back</a>
             <h1 class="verify-title">Verify Code</h1>
         </div>
 
         <!-- Logo Container (overlapping both sections) -->
         <div class="logo-container">
             <div class="logo-circle">
-                <img src="img/logo.png" alt="EZTrack Logo">
+                <img src="view/img/logo.png" alt="EZTrack Logo">
             </div>
         </div>
 
@@ -227,12 +230,12 @@
 
                 <!-- Code Input Fields -->
                 <div class="code-input-container">
-                    <input type="text" class="code-input" maxlength="1" id="code1">
-                    <input type="text" class="code-input" maxlength="1" id="code2">
-                    <input type="text" class="code-input" maxlength="1" id="code3">
-                    <input type="text" class="code-input" maxlength="1" id="code4">
-                    <input type="text" class="code-input" maxlength="1" id="code5">
-                    <input type="text" class="code-input" maxlength="1" id="code6">
+                    <input type="number" class="code-input" maxlength="1" id="code1">
+                    <input type="number" class="code-input" maxlength="1" id="code2">
+                    <input type="number" class="code-input" maxlength="1" id="code3">
+                    <input type="number" class="code-input" maxlength="1" id="code4">
+                    <input type="number" class="code-input" maxlength="1" id="code5">
+                    <input type="number" class="code-input" maxlength="1" id="code6">
                 </div>
 
                 <!-- Verify Button -->
@@ -252,12 +255,12 @@
         // Auto-focus and navigation between input fields
         document.addEventListener('DOMContentLoaded', function() {
             const inputs = document.querySelectorAll('.code-input');
-            
+
             inputs.forEach((input, index) => {
                 input.addEventListener('input', function(e) {
                     // Only allow digits
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                    
+
                     // Move to next input if current is filled
                     if (e.target.value && index < inputs.length - 1) {
                         inputs[index + 1].focus();
@@ -275,12 +278,12 @@
                     e.preventDefault();
                     const pasteData = e.clipboardData.getData('text');
                     const digits = pasteData.replace(/[^0-9]/g, '').slice(0, 6);
-                    
+
                     // Fill inputs with pasted digits
                     for (let i = 0; i < digits.length && i < inputs.length; i++) {
                         inputs[i].value = digits[i];
                     }
-                    
+
                     // Focus on the next empty input or the last one
                     const nextIndex = Math.min(digits.length, inputs.length - 1);
                     inputs[nextIndex].focus();
@@ -316,7 +319,7 @@
 
             // Append modal to body if not already present
             if (!document.getElementById('roleModal')) {
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
             }
 
             // Show modal
@@ -325,13 +328,13 @@
 
             // Add event listeners for buttons
             document.getElementById('studentBtn').onclick = function() {
-            window.location.href = 'student/student-subjects.html';
+                window.location.href = 'student/student-subjects.html';
             };
             document.getElementById('teacherBtn').onclick = function() {
-            window.location.href = 'teacher/teacher-sections.html';
+                window.location.href = 'teacher/teacher-sections.html';
             };
             document.getElementById('adminBtn').onclick = function() {
-            window.location.href = 'admin/admin-dashboard.html';
+                window.location.href = 'admin/admin-dashboard.html';
             };
         }
 
@@ -364,18 +367,21 @@
             const countdown = setInterval(() => {
                 const minutes = Math.floor(timeLeft / 60);
                 const remainingSeconds = timeLeft % 60;
-                
-                timerElement.textContent = 
+
+                timerElement.textContent =
                     `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 
                 if (timeLeft <= 0) {
                     clearInterval(countdown);
                     timerElement.textContent = '00:00';
                 }
-                
+
                 timeLeft--;
             }, 1000);
         }
     </script>
+
+    <script src="view/js/show-alert.js"></script>
 </body>
+
 </html>
