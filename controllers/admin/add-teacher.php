@@ -11,6 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $middle_initial = $_POST['middle_initial'];
     $email = $_POST['email'];
     $section_handled = $_POST['section_handled'];
+    $subject_handled = $_POST['subject_handled'];
+    if (empty($subject_handled)) {
+        $subject_handled = null;
+    }
     $gender = $_POST['gender'];
 
     //check section on database
@@ -20,12 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(array('error' => 'Teacher already exists.'));
         exit();
     }
-    $teacher_section = getRecord('teachers', 'section_handled = "' . $section_handled . '"');
-    if ($teacher_section) {
-        header('Content-Type: application/json');
-        echo json_encode(array('error' => 'Section already has a teacher.'));
-        exit();
+    if (empty($section_handled)) {
+        $section_handled = null;
+    } else {
+        $teacher_section = getRecord('teachers', 'section_handled = "' . $section_handled . '"');
+        if ($teacher_section) {
+            header('Content-Type: application/json');
+            echo json_encode(array('error' => 'Section already has a teacher.'));
+            exit();
+        }
     }
+
     $teacher_email = getRecord('teachers', 'email = "' . $email . '"');
     if ($teacher_email) {
         header('Content-Type: application/json');
@@ -37,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle file upload
     $image = $_FILES['photo'];
-    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
 
     if (!in_array($image['type'], $allowed_types)) {
         throw new Exception("Invalid image type. Only JPG, PNG, and GIF are allowed.");
@@ -68,12 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'middle_initial' => $middle_initial,
         'email' => $email,
         'section_handled' => $section_handled,
+        'subject_handled' => $subject_handled,
         'photo' => $image_name,
         'password' => $password,
         'gender' => $gender
     );
 
-    $result = insertRecord('teachers', $data);
+    $result = addRecord('teachers', $data);
 
     if ($result) {
         header('Content-Type: application/json');

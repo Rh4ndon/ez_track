@@ -6,6 +6,7 @@
 
 <?php
 $sections = getAllRecords('sections');
+$subjects = getAllRecords('subjects');
 $teachers = getAllRecords('teachers');
 ?>
 
@@ -23,6 +24,7 @@ $teachers = getAllRecords('teachers');
         <!-- Teacher Cards -->
         <?php foreach ($teachers as $teacher):
             $section_handled = getRecord('sections', 'id = "' . $teacher['section_handled'] . '"');
+            $subject_handled = getRecord('subjects', 'id = "' . $teacher['subject_handled'] . '"');
         ?>
 
             <div class="card shadow-sm border-0 text-center position-relative" style="width: 180px;">
@@ -42,6 +44,8 @@ $teachers = getAllRecords('teachers');
                     </div>
                     <h5 class="fw-bold mb-1"><?= $teacher['first_name']; ?> <?= $teacher['middle_initial']; ?>. <?= $teacher['last_name']; ?></h5>
                     <small class="text-muted"><?= $section_handled['grade_level']; ?>-<?= $section_handled['section_name']; ?></small>
+                    <br>
+                    <small class="text-muted"><?= $subject_handled['subject_name']; ?></small>
                 </div>
             </div>
 
@@ -100,10 +104,20 @@ $teachers = getAllRecords('teachers');
 
                     <div class="mb-3">
                         <label for="section" class="form-label">Section Handled</label>
-                        <select class="form-select" name="section_handled" id="section_handled" required>
-                            <option value="" disabled selected>Select Section</option>
+                        <select class="form-select" name="section_handled" id="section_handled">
+                            <option value="" selected>Select None</option>
                             <?php foreach ($sections as $section) : ?>
                                 <option value="<?php echo $section['id']; ?>"><?php echo $section['grade_level']; ?>-<?php echo $section['section_name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_subject_handled" class="form-label">Subject Handled</label>
+                        <select class="form-select" name="subject_handled" id="subject_handled">
+                            <option value="" selected>Select None</option>
+                            <?php foreach ($subjects as $subject) : ?>
+                                <option value="<?php echo $subject['id']; ?>"><?php echo $subject['subject_name']; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -167,13 +181,25 @@ $teachers = getAllRecords('teachers');
 
                     <div class="mb-3">
                         <label for="edit_section_handled" class="form-label">Section Handled</label>
-                        <select class="form-select" name="section_handled" id="edit_section_handled" required>
-                            <option value="" disabled>Select Section</option>
+                        <select class="form-select" name="section_handled" id="edit_section_handled">
+                            <option value="" selected>Select None</option>
                             <?php foreach ($sections as $section) : ?>
                                 <option value="<?php echo $section['id']; ?>"><?php echo $section['grade_level']; ?>-<?php echo $section['section_name']; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="edit_subject_handled" class="form-label">Subject Handled</label>
+                        <select class="form-select" name="subject_handled" id="edit_subject_handled">
+                            <option value="" selected>Select None</option>
+                            <?php foreach ($subjects as $subject) : ?>
+                                <option value="<?php echo $subject['id']; ?>"><?php echo $subject['subject_name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+
 
                     <div class="mb-3">
                         <label for="edit_password" class="form-label">Password (Leave empty to keep current)</label>
@@ -257,7 +283,11 @@ $teachers = getAllRecords('teachers');
         document.getElementById('edit_last_name').value = teacher.last_name;
         document.getElementById('edit_middle_initial').value = teacher.middle_initial;
         document.getElementById('edit_email').value = teacher.email;
-        document.getElementById('edit_section_handled').value = teacher.section_handled;
+        const sectionsSelect = document.getElementById('edit_section_handled');
+        const subjectsSelect = document.getElementById('edit_subject_handled');
+
+        sectionsSelect.value = teacher.section_handled === null ? sectionsSelect.options[0].value : teacher.section_handled;
+        subjectsSelect.value = teacher.subject_handled === null ? subjectsSelect.options[0].value : teacher.subject_handled;
         document.getElementById('edit_gender').value = teacher.gender;
 
         const editModal = new bootstrap.Modal(document.getElementById('editTeacherModal'));

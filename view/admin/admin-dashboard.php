@@ -4,6 +4,11 @@
 
 <?php include 'sidebar.php'; ?>
 
+<?php
+$sections = countAllRecords('sections');
+$teachers = countAllRecords('teachers');
+$students = countAllRecords('students');
+?>
 <!-- Main Content -->
 <main class="main-content">
     <div class="stats-container">
@@ -25,7 +30,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">TOTAL TEACHERS</div>
-                <div class="stat-number">50</div>
+                <div class="stat-number"><?php echo $teachers; ?></div>
             </div>
         </div>
 
@@ -62,7 +67,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">TOTAL SECTIONS</div>
-                <div class="stat-number">20</div>
+                <div class="stat-number"><?php echo $sections; ?></div>
             </div>
         </div>
 
@@ -83,7 +88,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">TOTAL STUDENTS</div>
-                <div class="stat-number">120</div>
+                <div class="stat-number"><?php echo $students; ?></div>
             </div>
         </div>
     </div>

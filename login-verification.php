@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EzTrack Verify Code</title>
+    <title>EzTrack Login Verify Code</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body,
@@ -313,39 +313,27 @@
             // Get stored verification code
             const storedVerification = localStorage.getItem('verification');
 
+            console.log(localStorage.getItem('verification'));
+
             // Compare input code with stored verification code
             if (code1 + code2 + code3 + code4 + code5 + code6 === storedVerification) {
-                const formData = new FormData();
-                formData.append('email', localStorage.getItem('email'));
-                formData.append('first_name', localStorage.getItem('first_name'));
-                formData.append('middle_initial', localStorage.getItem('middle_initial'));
-                formData.append('last_name', localStorage.getItem('last_name'));
-                formData.append('password', localStorage.getItem('password'));
-                formData.append('section', localStorage.getItem('section'));
-                formData.append('gender', localStorage.getItem('gender'));
-                formData.append('lrn', localStorage.getItem('lrn'));
+                localStorage.setItem('is_logged_in', true);
+                localStorage.removeItem('verification');
+                if (localStorage.getItem('role') === 'student') {
+                    showAlert('Student logged in successfully!', 'success');
+                } else if (localStorage.getItem('role') === 'teacher') {
+                    showAlert('Teacher logged in successfully!', 'success');
+                }
+                setTimeout(() => {
+                    if (localStorage.getItem('role') === 'student') {
+                        window.location.href = 'view/student/student-subjects.php?msg=Student logged in successfully!';
+                    } else if (localStorage.getItem('role') === 'teacher') {
+                        window.location.href = 'view/teacher/teacher-sections.php?msg=Teacher logged in successfully!';
+                    }
 
-                // Send data to controllers/student/student-verify.php
-                fetch('controllers/student/student-register.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success === true) {
-                            showAlert('Student registered successfully!', 'success');
-                            localStorage.removeItem('verification');
-                            localStorage.setItem('role', 'student');
-                            localStorage.setItem('is_logged_in', true);
-                            localStorage.setItem('login_time', data.login_time);
-                            localStorage.setItem('id', data.id);
-                            setTimeout(() => {
-                                window.location.href = 'view/student/student-subjects.php?msg=Student registered successfully!';
-                            }, 2000);
-                        } else {
-                            showAlert((data.error || 'Failed to register student'), 'danger');
-                        }
-                    });
+                }, 2000);
+
+
             } else {
                 showAlert('Invalid verification code', 'danger');
             }

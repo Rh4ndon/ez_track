@@ -17,12 +17,12 @@ if (isset($_GET['role'])) {
     } else if ($role === 'teacher') {
         echo "<script>
                 localStorage.clear();
-                window.location.href = '../index.html?msg=You have been logged out successfully.';
+                window.location.href = '../index.php?msg=You have been logged out successfully.';
                 </script>";
     } else if ($role === 'student') {
         echo "<script>
                 localStorage.clear();
-                window.location.href = '../index.html?msg=You have been logged out successfully.';
+                window.location.href = '../index.php?msg=You have been logged out successfully.';
                 </script>";
     }
 }

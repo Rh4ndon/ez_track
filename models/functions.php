@@ -13,6 +13,26 @@ function insertRecord($table, $data)
     $query = "INSERT INTO $table ($columns) VALUES ('$values')";
     return mysqli_query($conn, $query);
 }
+
+function addRecord($table, $data)
+{
+    global $conn;
+    $columns = [];
+    $placeholders = [];
+    $values = [];
+    foreach ($data as $key => $value) {
+        $columns[] = $key;
+        if ($value === null || $value === 'NULL') {
+            $placeholders[] = 'NULL';
+        } else {
+            $placeholders[] = "'" . mysqli_real_escape_string($conn, $value) . "'";
+        }
+    }
+    $columnsStr = implode(", ", $columns);
+    $placeholdersStr = implode(", ", $placeholders);
+    $query = "INSERT INTO $table ($columnsStr) VALUES ($placeholdersStr)";
+    return mysqli_query($conn, $query);
+}
 function editRecord($table, $data, $condition)
 {
     global $conn;

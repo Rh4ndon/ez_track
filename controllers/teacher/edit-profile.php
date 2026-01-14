@@ -1,5 +1,6 @@
 <?php
 include '../../models/functions.php';
+include '../mailer.php';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -11,30 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = $_POST['last_name'];
     $middle_initial = $_POST['middle_initial'];
     $email = $_POST['email'];
-    $section_handled = $_POST['section_handled'];
-    $subject_handled = $_POST['subject_handled'];
-    if (empty($subject_handled)) {
-        $subject_handled = null;
-    }
     $gender = $_POST['gender'];
+    $otp = null;
 
-    //check section on database
+    $teacher = getRecord('teachers', 'id = "' . $_POST['id'] . '"');
+
+    //check teacher on database
     $teacher_exists = getRecord('teachers', 'first_name = "' . $first_name . '" AND last_name = "' . $last_name . '"' . ' AND middle_initial = "' . $middle_initial . '" AND id != "' . $id . '"');
     if ($teacher_exists) {
         header('Content-Type: application/json');
         echo json_encode(array('error' => 'Teacher already exists.'));
         exit();
     }
-    if (empty($section_handled)) {
-        $section_handled = null;
-    } else {
-        $teacher_section = getRecord('teachers', 'section_handled = "' . $section_handled . '" AND id != "' . $id . '"');
-        if ($teacher_section) {
-            header('Content-Type: application/json');
-            echo json_encode(array('error' => 'Section already has a teacher.'));
-            exit();
-        }
-    }
+
     $teacher_email = getRecord('teachers', 'email = "' . $email . '" AND id != "' . $id . '"');
     if ($teacher_email) {
         header('Content-Type: application/json');
@@ -42,13 +32,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    if ($email != $teacher['email']) {
+        // Generate OTP
+        $otp = rand(100000, 999999);
+
+        $subject = 'EZTrack System OTP Verification';
+        $name = $first_name . ' ' . $last_name;
+        $message = '
+        <h3>Good day, ' . $name . '</h3>
+        <p>Here is your OTP: <b>' . $otp . '</b></p>
+        <p>Thanks for using our service.</p>
+        <p>EZTrack System</p>
+        ';
+        $alt_message = 'Good day, ' . $name . '
+        Here is your OTP: ' . $otp . '
+        Thanks for using our service.
+        EZTrack System
+        ';
+        send_email($email, $name, $message, $alt_message, $subject);
+    }
     $data = array(
         'first_name' => $first_name,
         'last_name' => $last_name,
         'middle_initial' => $middle_initial,
         'email' => $email,
-        'section_handled' => $section_handled,
-        'subject_handled' => $subject_handled,
         'gender' => $gender
     );
 
@@ -60,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle file upload if photo is not empty
     if (!empty($_FILES['photo']['name'])) {
         // delete first the old photo
-        $teacher = getRecord('teachers', 'id = "' . $_POST['id'] . '"');
+
         if ($teacher['photo']) {
             $photo_path = '../../view/uploads/teachers/' . $teacher['photo'];
             if (file_exists($photo_path)) {
@@ -69,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $image = $_FILES['photo'];
-        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
         if (!in_array($image['type'], $allowed_types)) {
             throw new Exception("Invalid image type. Only JPG, PNG, and GIF are allowed.");
@@ -98,11 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-    $result = updateRecord('teachers', $data, 'id = ' . $id);
+    $result = editRecord('teachers', $data, 'id = ' . $id);
 
     if ($result) {
         header('Content-Type: application/json');
-        echo json_encode(array('success' => true));
+        echo json_encode(array(
+            'success' => true,
+            'otp' => $otp
+        ));
     }
 } else {
     header('Content-Type: application/json');

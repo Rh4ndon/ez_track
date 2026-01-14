@@ -42,6 +42,10 @@
         window.location.href = 'index.php?error=Your not logged in!';
     }
 
+    if (localStorage.getItem('role') !== 'admin') {
+        window.location.href = '../../index.php?error=You are not an admin!';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Remove section_id from localStorage
         localStorage.removeItem('section_id');

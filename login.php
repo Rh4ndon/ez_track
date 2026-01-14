@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EzTrack Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -78,18 +81,18 @@
         }
 
         .logo-circle {
-            width: 250px;
-            height: 250px;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
-            
+
             display: flex;
             align-items: center;
             justify-content: center;
-      
+
         }
 
         .logo-circle img {
-        
+
             height: 200%;
             object-fit: cover;
             border-radius: 50%;
@@ -195,11 +198,11 @@
                 width: 100px;
                 height: 100px;
             }
-            
+
             .login-title {
-                font-size: 48px;
+                font-size: 38px;
             }
-            
+
             .form-container {
                 max-width: 280px;
                 margin-top: 70px;
@@ -207,11 +210,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid">
         <!-- Top Section with Gradient -->
         <div class="top-section">
-            <a href="index.html" class="back-btn">← Back</a>
+            <a href="index.php" class="back-btn">← Back</a>
+            <br>
             <h1 class="login-title">LOGIN</h1>
         </div>
 
@@ -226,30 +231,42 @@
         <!-- Bottom Section with Blue Background -->
         <div class="bottom-section">
             <div class="form-container">
-                <!-- Name Field -->
-                <div class="form-group">
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-control" placeholder="Enter your name">
-                </div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-select form-control" name="role" id="role">
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="Enter your email">
+                    </div>
 
-                <!-- Password Field -->
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" placeholder="Enter your password">
-                </div>
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock-fill"></i>
+                            </span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            <button type="button" class="input-group-text" onclick="togglePassword('password')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
 
-                <!-- Email Field -->
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" placeholder="Enter your email">
-                </div>
 
-            
-                <!-- Sign In Button -->
-                <div class="text-center">
-                    <a href="verification.html" class="btn sign-in-btn">SIGN IN</a>
-                </div>
+                    <!-- Sign In Button -->
+                    <div class="text-center">
+                        <button type="submit" class="btn sign-in-btn">SIGN IN</button>
+                    </div>
+                </form>
             </div>
+
 
             <!-- Decorative Clouds -->
             <div class="clouds"></div>
@@ -257,5 +274,72 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="view/js/show-alert.js"></script>
+    <script>
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const eyeIcon = event.currentTarget.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('bi-eye');
+                eyeIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('bi-eye-slash');
+                eyeIcon.classList.add('bi-eye');
+            }
+        }
+        if (localStorage.getItem('verification')) {
+            localStorage.removeItem('verification');
+        }
+        if (localStorage.getItem('is_logged_in') === 'true' && localStorage.getItem('role') === 'student') {
+            window.location.href = 'view/student/student-subjects.php?msg=You are already logged in as a student.';
+        } else if (localStorage.getItem('is_logged_in') === 'true' && localStorage.getItem('role') === 'teacher') {
+            window.location.href = 'view/teacher/teacher-sections.php?msg=You are already logged in as a teacher.';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('controllers/login.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === true) {
+                        localStorage.setItem('role', data.role);
+                        localStorage.setItem('id', data.id);
+                        localStorage.setItem('first_name', data.first_name);
+                        localStorage.setItem('middle_initial', data.middle_initial);
+                        localStorage.setItem('last_name', data.last_name);
+                        localStorage.setItem('section', data.section);
+                        localStorage.setItem('email', data.email);
+                        localStorage.setItem('gender', data.gender);
+                        localStorage.setItem('login_time', data.login_time);
+                        localStorage.setItem('verification', data.otp);
+                        if (data.role === 'student') {
+                            localStorage.setItem('lrn', data.lrn);
+                        }
+                        showAlert('Login successful please enter verification code', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'login-verification.php?msg=Please enter verification code';
+                        }, 2000);
+
+                    } else {
+                        showAlert((data.error || 'Failed to login'), 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('An error occurred while logging in', 'danger');
+                });
+        });
+    </script>
+
 </body>
+
 </html>

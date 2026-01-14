@@ -192,7 +192,7 @@
     let sectionToDelete = null;
 
     function navigateToSection(sectionId) {
-        localStorage.setItem('section_id', sectionId);
+        sessionStorage.setItem('section_id', sectionId);
         window.location.href = 'admin-section-details.php';
     }
 

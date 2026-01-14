@@ -146,6 +146,17 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="view/js/show-alert.js"></script>
+    <script>
+        if (localStorage.getItem('verification')) {
+            localStorage.removeItem('verification');
+        }
+        if (localStorage.getItem('is_logged_in') === 'true' && localStorage.getItem('role') === 'student') {
+            window.location.href = 'view/student/student-subjects.php?msg=You are already logged in as a student.';
+        } else if (localStorage.getItem('is_logged_in') === 'true' && localStorage.getItem('role') === 'teacher') {
+            window.location.href = 'view/teacher/teacher-sections.php?msg=You are already logged in as a teacher.';
+        }
+    </script>
 </body>
 
 </html>
