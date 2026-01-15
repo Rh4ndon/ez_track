@@ -6,7 +6,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $sections = getAllRecords('students', 'WHERE section_id = ' . $_GET['id'] . ' ORDER BY last_name, gender ASC');
+    $sections = getAllRecords('students', 'WHERE section_id = ' . $_GET['id'] . ' ORDER BY gender,last_name  ASC');
 
     $section = getRecord('sections', 'id = ' . $_GET['id']);
     header('Content-Type: application/json');

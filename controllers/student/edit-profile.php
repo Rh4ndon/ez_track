@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $image = $_FILES['photo'];
-        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
 
         if (!in_array($image['type'], $allowed_types)) {
             throw new Exception("Invalid image type. Only JPG, PNG, and GIF are allowed.");

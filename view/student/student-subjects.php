@@ -244,6 +244,7 @@
         .subject-icon {
             width: 80px;
             height: 80px;
+            font-size: 36px;
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             border-radius: 50%;
             display: flex;
@@ -261,10 +262,6 @@
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
         }
 
-        .subject-icon i {
-            font-size: 36px;
-            color: #00167a;
-        }
 
         /* Level Badge */
         .level-badge {
@@ -316,6 +313,10 @@
 
         .subject-card:nth-child(9)::before {
             background: linear-gradient(90deg, #1cc88a, #13855c);
+        }
+
+        .subject-card:nth-child(10)::before {
+            background: linear-gradient(90deg, #36b9cc, #258391);
         }
 
         /* Responsive adjustments */
@@ -440,6 +441,10 @@
         .subject-card:nth-child(9) {
             animation-delay: 0.9s;
         }
+
+        .subject-card:nth-child(10) {
+            animation-delay: 1s;
+        }
     </style>
 </head>
 
@@ -469,114 +474,75 @@
     <main class="main-content">
         <h1 class="page-title">🌟 My Subjects 🌟</h1>
 
-        <div class="subject-container" id="subjectContainer">
-            <!-- TLE -->
-
-            <div class="subject-card" onclick="subjectRedirect('TLE')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-tools"></i>
-                </div>
-                <h3 class="subject-name">TLE</h3>
-                <p class="subject-abbr">Technology and Livelihood Education</p>
-            </div>
-
-
-            <!-- MAPEH -->
-
-            <div class="subject-card" onclick="subjectRedirect('MAPEH')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-music"></i>
-                </div>
-                <h3 class="subject-name">MAPEH</h3>
-                <p class="subject-abbr">Music, Arts, PE, and Health</p>
-            </div>
-
-
-            <!-- SCIENCE -->
-
-            <div class="subject-card" onclick="subjectRedirect('SCIENCE')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-flask"></i>
-                </div>
-                <h3 class="subject-name">SCIENCE</h3>
-                <p class="subject-abbr">Science</p>
-            </div>
-
-
-            <!-- ENGLISH -->
-
-            <div class="subject-card" onclick="subjectRedirect('ENGLISH')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-book"></i>
-                </div>
-                <h3 class="subject-name">ENGLISH</h3>
-                <p class="subject-abbr">English</p>
-            </div>
-
-
-            <!-- MATH -->
-
-            <div class="subject-card" onclick="subjectRedirect('MATH')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-calculator"></i>
-                </div>
-                <h3 class="subject-name">MATH</h3>
-                <p class="subject-abbr">Mathematics</p>
-            </div>
-
-
-            <!-- ESP -->
-
-            <div class="subject-card" onclick="subjectRedirect('ESP')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-hands-helping"></i>
-                </div>
-                <h3 class="subject-name">ESP</h3>
-                <p class="subject-abbr">Edukasyon sa Pagpapakatao</p>
-            </div>
-
-
-            <!-- FILIPINO -->
-
-            <div class="subject-card" onclick="subjectRedirect('FILIPINO')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-language"></i>
-                </div>
-                <h3 class="subject-name">FILIPINO</h3>
-                <p class="subject-abbr">Filipino</p>
-            </div>
-
-
-            <!-- AP -->
-
-            <div class="subject-card" onclick="subjectRedirect('AP')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-globe-asia"></i>
-                </div>
-                <h3 class="subject-name">AP</h3>
-                <p class="subject-abbr">Araling Panlipunan</p>
-            </div>
-
-            <!-- Special Subject -->
-
-            <div class="subject-card" onclick="subjectRedirect('SPECIAL')">
-                <div class="level-badge">LVL 1</div>
-                <div class="subject-icon">
-                    <i class="fas fa-asterisk"></i>
-                </div>
-                <h3 class="subject-name">SPECIAL</h3>
-                <p class="subject-abbr">Special Subject</p>
-            </div>
-
+        <div class="subject-container" id="subject-container">
+            <!-- Will be populated by JavaScript -->
         </div>
+
+        <script>
+            // Function to escape HTML special characters
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Function to fetch and display subjects
+            async function loadSubjects() {
+                try {
+                    const response = await fetch('../../controllers/student/get-subjects.php?id=' + localStorage.getItem('section'));
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Check if data has the expected structure
+                    if (!data.subjects || !Array.isArray(data.subjects)) {
+                        throw new Error('Invalid data structure received');
+                    }
+
+                    const container = document.getElementById('subject-container');
+
+                    // Generate HTML for each subject
+                    container.innerHTML = data.subjects.map(subject => `
+                        <div class="subject-card" onclick="subjectRedirect('${escapeHtml(subject.id)}')">
+                          
+                            <div class="subject-icon">
+                                ${subject.icon}
+                            </div>
+                            <h3 class="subject-name">${escapeHtml(subject.grade_level + '-' + subject.subject_name)}</h3>
+                            <p class="subject-abbr">${escapeHtml(subject.description)}</p>
+                            <p class="subject-abbr">${escapeHtml(subject.schedules.day_of_week)}</p>
+                        </div>
+                    `).join('');
+
+                } catch (error) {
+                    console.error('Error loading subjects:', error);
+
+                    // Show error message to user
+                    const container = document.getElementById('subject-container');
+                    if (container) {
+                        container.innerHTML = `
+                <div class="error-message" style="text-align: center; padding: 2rem; color: #666; width: 100%;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                    <p style="font-size: 1.1rem;">Failed to load subjects. Please try again later.</p>
+                    <button onclick="loadSubjects()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #4a90e2; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Retry
+                    </button>
+                </div>
+            `;
+                    }
+                }
+            }
+
+            // Start loading subjects when page is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadSubjects);
+            } else {
+                loadSubjects(); // DOM already loaded
+            }
+        </script>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

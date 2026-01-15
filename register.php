@@ -308,7 +308,7 @@ $sections = getAllRecords('sections');
 
                     <div class="form-group">
                         <label class="form-label">Middle Initial</label>
-                        <input type="text" class="form-control" id="middle_initial" name="middle_initial" placeholder="Enter your middle initial" maxlength="2" required>
+                        <input type="text" class="form-control" id="middle_initial" name="middle_initial" placeholder="Enter your middle initial" maxlength="2">
                     </div>
 
                     <!-- Password Field -->

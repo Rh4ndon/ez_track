@@ -15,7 +15,7 @@
 
     <div class="section-container d-flex flex-wrap align-items-center justify-content-center gap-4 p-3">
         <?php
-        $sections = getAllRecords('sections');
+        $sections = getAllRecords('sections', 'ORDER BY grade_level ASC');
         foreach ($sections as $section):
         ?>
             <div class="card shadow-sm border-0 position-relative" style="width: 200px; height: 100px;">

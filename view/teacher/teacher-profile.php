@@ -299,7 +299,7 @@ include '../../models/functions.php';
 
                         <div class="mb-3">
                             <label for="edit_middle_initial" class="form-label">Middle Initial</label>
-                            <input type="text" class="form-control" id="edit_middle_initial" name="middle_initial" placeholder="Enter profile middle initial" maxlength="2" required>
+                            <input type="text" class="form-control" id="edit_middle_initial" name="middle_initial" placeholder="Enter profile middle initial" maxlength="2">
                         </div>
 
 
@@ -481,7 +481,7 @@ include '../../models/functions.php';
                         const firstName = data.first_name;
                         const middleInitial = data.middle_initial;
                         const lastName = data.last_name;
-                        profileName.textContent = `${firstName} ${middleInitial}. ${lastName}`;
+                        profileName.textContent = `${firstName} ${middleInitial} ${lastName}`;
 
                         document.getElementById('edit_profile_id').value = localStorage.getItem('id');
                         document.getElementById('edit_first_name').value = data.first_name;

@@ -213,6 +213,16 @@ function getRecordMultiTable($table1, $table2, $onCondition, $whereCondition)
     return mysqli_fetch_assoc($result);
 }
 
+function getRecordsMultiTable($table1, $table2, $onCondition, $whereCondition)
+{
+    global $conn;
+    // All parameters assumed safe (not user-controlled)
+    $query = "SELECT * FROM $table1 LEFT JOIN $table2 ON $onCondition WHERE $whereCondition";
+    $result = mysqli_query($conn, $query);
+    return mysqli_fetch_all($result);
+}
+
+
 function countAllRecords($table, $whereCondition = '1')
 {
     global $conn;

@@ -9,12 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $middle_initial = $_POST['middle_initial'];
+    if (empty($middle_initial)) {
+        $middle_initial = null;
+    }
     $email = $_POST['email'];
     $section_handled = $_POST['section_handled'];
-    $subject_handled = $_POST['subject_handled'];
-    if (empty($subject_handled)) {
-        $subject_handled = null;
-    }
     $gender = $_POST['gender'];
 
     //check section on database
@@ -77,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'middle_initial' => $middle_initial,
         'email' => $email,
         'section_handled' => $section_handled,
-        'subject_handled' => $subject_handled,
         'photo' => $image_name,
         'password' => $password,
         'gender' => $gender

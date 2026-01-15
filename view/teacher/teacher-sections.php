@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EzTrack Dashboard - Subjects</title>
+    <title>EzTrack Dashboard - Section</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -159,17 +159,114 @@
 
 
 
-        <div class="section-container d-flex flex-wrap align-items-center justify-content-center gap-4 p-3">
+        <div class="section-container d-flex flex-wrap align-items-center justify-content-center gap-4 p-3" id="section-container">
 
-            <!-- First Section -->
-            <a href="teacher-activities.html" class="text-decoration-none text-dark section-link">
-                <div class="card shadow-sm border-0" style="width: 150px; height: 50px;">
-                    <div class="card-body text-center d-flex flex-column justify-content-center">
-                        <h1 class="fw-bold text-white m-0">10-Larry</h1>
-                    </div>
-                </div>
-            </a>
+
         </div>
+
+
+        <div class="section-container d-flex flex-wrap align-items-center justify-content-center gap-4 p-3" id="subject-section-container">
+
+
+        </div>
+
+        <script>
+            // Function to escape HTML special characters
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Function to fetch and display section
+            async function loadSection() {
+                try {
+                    const response = await fetch('../../controllers/teacher/get-sections.php?id=' + localStorage.getItem('section'));
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Check if data has the expected structure
+                    if (!data.sections || !Array.isArray(data.sections)) {
+                        throw new Error('Invalid data structure received');
+                    }
+
+                    if (!data.subject_sections || !Array.isArray(data.subject_sections)) {
+                        throw new Error('Invalid data structure received');
+                    }
+
+                    const container = document.getElementById('section-container');
+
+                    const container2 = document.getElementById('subject-section-container');
+
+                    // Generate HTML for each section
+                    container.innerHTML = data.sections.map(section => `
+                        <div class="section-card section-link" onclick="sectionRedirect('${escapeHtml(section.id)}')">
+                            <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
+                                <div class="card-body text-center d-flex flex-column justify-content-center">
+                                    <h1 class="fw-bold text-white m-0">${section.grade_level}-${section.section_name}</h1>
+                                    <p class="text-white m-0" style="font-size: 12px;">(Teacher is adviser of this section)</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    container2.innerHTML = data.subject_sections.map(subject_section => `
+                        <div class="section-card section-link" onclick="sectionSubjectRedirect('${escapeHtml(subject_section.section_id)}','${escapeHtml(subject_section.subject_id)}')">
+                            <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
+                                <div class="card-body text-center d-flex flex-column justify-content-center">
+                                    <h1 class="fw-bold text-white m-0">${subject_section.section_name}</h1>
+                                    <p class="text-white m-0" style="font-size: 15px;">${subject_section.subject_name}</p>
+                                    <p class="text-white m-0" style="font-size: 15px;">${subject_section.start_time} <br> ${subject_section.end_time}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                } catch (error) {
+                    console.error('Error loading section:', error);
+
+                    // Show error message to user
+                    const container = document.getElementById('subject-container');
+                    if (container) {
+                        container.innerHTML = `
+                        <div class="error-message" style="text-align: center; padding: 2rem; color: #666; width: 100%;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                            <p style="font-size: 1.1rem;">Failed to load section. Please try again later.</p>
+                            <button onclick="loadSection()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #4a90e2; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                Retry
+                            </button>
+                        </div>
+                    `;
+
+
+                    }
+                }
+            }
+
+            // Start loading section when page is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadSection);
+            } else {
+                loadSection(); // DOM already loaded
+            }
+
+            // Your existing sectionRedirect function
+            function sectionRedirect(sectionId) {
+
+                sessionStorage.setItem('section_id', sectionId);
+                window.location.href = 'teacher-section-handled.php';
+            }
+
+            function sectionSubjectRedirect(sectionId, subjectId) {
+                sessionStorage.setItem('section_id', sectionId);
+                sessionStorage.setItem('subject_id', subjectId);
+                window.location.href = 'teacher-subject-handled.php';
+            }
+        </script>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -203,6 +300,8 @@
                     .catch(error => {
                         console.error('Error:', error);
                     });
+
+
             }
         });
     </script>
