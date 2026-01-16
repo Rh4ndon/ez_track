@@ -506,7 +506,7 @@
 
                     // Generate HTML for each subject
                     container.innerHTML = data.subjects.map(subject => `
-                        <div class="subject-card" onclick="subjectRedirect('${escapeHtml(subject.id)}')">
+                        <div class="subject-card" onclick="subjectRedirect('${escapeHtml(subject.id)}', '${escapeHtml(subject.grade_level + '-' + subject.subject_name)}')">
                           
                             <div class="subject-icon">
                                 ${subject.icon}
@@ -646,9 +646,10 @@
             }
         });
 
-        function subjectRedirect(subject) {
+        function subjectRedirect(subject_id, subject) {
+            sessionStorage.setItem('subject_id', subject_id);
             sessionStorage.setItem('subject', subject);
-            sessionStorage.setItem('type', 'Activities');
+            sessionStorage.setItem('type', 'activity');
             window.location.href = 'student-activities.php';
         }
     </script>

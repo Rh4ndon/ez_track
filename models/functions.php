@@ -14,6 +14,38 @@ function insertRecord($table, $data)
     return mysqli_query($conn, $query);
 }
 
+function newRecord($table, $data)
+{
+    global $conn;
+
+    $columns = implode(", ", array_keys($data));
+    $placeholders = implode(", ", array_fill(0, count($data), '?'));
+
+    $query = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+    $stmt = mysqli_prepare($conn, $query);
+
+    if (!$stmt) {
+        error_log("Prepare failed: " . mysqli_error($conn));
+        return false;
+    }
+
+    // Bind parameters
+    $types = str_repeat('s', count($data));
+    $values = array_values($data);
+
+    mysqli_stmt_bind_param($stmt, $types, ...$values);
+
+    if (mysqli_stmt_execute($stmt)) {
+        $insert_id = mysqli_stmt_insert_id($stmt);
+        mysqli_stmt_close($stmt);
+        return $insert_id;
+    } else {
+        error_log("Execute failed: " . mysqli_stmt_error($stmt));
+        mysqli_stmt_close($stmt);
+        return false;
+    }
+}
+
 function addRecord($table, $data)
 {
     global $conn;
@@ -33,6 +65,7 @@ function addRecord($table, $data)
     $query = "INSERT INTO $table ($columnsStr) VALUES ($placeholdersStr)";
     return mysqli_query($conn, $query);
 }
+
 function editRecord($table, $data, $condition)
 {
     global $conn;

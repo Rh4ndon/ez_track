@@ -222,6 +222,8 @@ include '../../models/functions.php';
 
             <h2 class="profile-name" id="profile-name"></h2>
             <div class="profile-section" id="profile-section"></div>
+            <div class="profile-info" id="profile-email"></div>
+            <div class="profile-info" id="profile-gender"></div>
         </div>
 
         <div class="warning-text">
@@ -482,6 +484,10 @@ include '../../models/functions.php';
                         const middleInitial = data.middle_initial;
                         const lastName = data.last_name;
                         profileName.textContent = `${firstName} ${middleInitial} ${lastName}`;
+                        const profileEmail = document.getElementById('profile-email');
+                        profileEmail.textContent = 'Email: ' + data.email;
+                        const profileGender = document.getElementById('profile-gender');
+                        profileGender.textContent = 'Gender: ' + data.gender.charAt(0).toUpperCase() + data.gender.slice(1);
 
                         document.getElementById('edit_profile_id').value = localStorage.getItem('id');
                         document.getElementById('edit_first_name').value = data.first_name;

@@ -204,7 +204,7 @@
 
                     // Generate HTML for each section
                     container.innerHTML = data.sections.map(section => `
-                        <div class="section-card section-link" onclick="sectionRedirect('${escapeHtml(section.id)}')">
+                        <div class="section-card section-link" onclick="sectionRedirect('${escapeHtml(section.id)}', '${escapeHtml(section.grade_level)}-${escapeHtml(section.section_name)}')">
                             <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
                                 <div class="card-body text-center d-flex flex-column justify-content-center">
                                     <h1 class="fw-bold text-white m-0">${section.grade_level}-${section.section_name}</h1>
@@ -215,12 +215,11 @@
                     `).join('');
 
                     container2.innerHTML = data.subject_sections.map(subject_section => `
-                        <div class="section-card section-link" onclick="sectionSubjectRedirect('${escapeHtml(subject_section.section_id)}','${escapeHtml(subject_section.subject_id)}')">
+                        <div class="section-card section-link" onclick="sectionSubjectRedirect('${escapeHtml(subject_section.subject_id)}', '${escapeHtml(subject_section.subject_name)}')">
                             <div class="card shadow-sm border-0" style="width: 200px; height: 100px;">
                                 <div class="card-body text-center d-flex flex-column justify-content-center">
-                                    <h1 class="fw-bold text-white m-0">${subject_section.section_name}</h1>
-                                    <p class="text-white m-0" style="font-size: 15px;">${subject_section.subject_name}</p>
-                                    <p class="text-white m-0" style="font-size: 15px;">${subject_section.start_time} <br> ${subject_section.end_time}</p>
+                                    <h1 class="fw-bold text-white m-0">${subject_section.subject_name}</h1>
+                                    <p class="text-white m-0" style="font-size: 12px;">(Teacher teaches this subject)</p>
                                 </div>
                             </div>
                         </div>
@@ -255,15 +254,18 @@
             }
 
             // Your existing sectionRedirect function
-            function sectionRedirect(sectionId) {
+            function sectionRedirect(sectionId, sectionName) {
 
                 sessionStorage.setItem('section_id', sectionId);
+                sessionStorage.setItem('section_name', sectionName);
+                sessionStorage.setItem('type', 'activity');
                 window.location.href = 'teacher-section-handled.php';
             }
 
-            function sectionSubjectRedirect(sectionId, subjectId) {
-                sessionStorage.setItem('section_id', sectionId);
+            function sectionSubjectRedirect(subjectId, subjectName) {
                 sessionStorage.setItem('subject_id', subjectId);
+                sessionStorage.setItem('subject_name', subjectName);
+                sessionStorage.setItem('type', 'activity');
                 window.location.href = 'teacher-subject-handled.php';
             }
         </script>

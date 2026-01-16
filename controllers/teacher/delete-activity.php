@@ -21,39 +21,38 @@ try {
         exit;
     }
 
-    // Get the subject ID from POST data
-    $subjectId = isset($_POST['id']) ? $_POST['id'] : null;
+    // Get the activity ID from POST data
+    $activityId = isset($_POST['id']) ? $_POST['id'] : null;
 
-    // Validate subject ID
-    if (!$subjectId || !is_numeric($subjectId)) {
-        $response['message'] = 'Invalid subject ID';
+    // Validate activity ID
+    if (!$activityId || !is_numeric($activityId)) {
+        $response['message'] = 'Invalid activity ID';
         echo json_encode($response);
         exit;
     }
 
-    // Check if the subject exists
-    $existingSubject = getRecord('subjects',  'id = ' . $subjectId);
-    if (!$existingSubject) {
-        $response['message'] = 'Subject not found';
+    // Check if the activity exists
+    $existingActivity = getRecord('activities',  'id = ' . $activityId);
+    if (!$existingActivity) {
+        $response['message'] = 'Activity not found';
         echo json_encode($response);
         exit;
     }
 
-    //Check subject schedules
-    $subjectSchedules = getRecord('schedules', 'subject_id = ' . $subjectId);
-    if ($subjectSchedules) {
-        $response['message'] = 'Cannot delete subject with schedules';
+    $deleteStudentProgress = deleteRecordById('student_progress', $activityId, 'activity_id');
+    if (!$deleteStudentProgress) {
+        $response['message'] = 'Error deleting student progress';
         echo json_encode($response);
         exit;
     }
 
-    // Delete the subject
-    $deleteSubject = deleteRecordById('subjects', $subjectId);
-    if ($deleteSubject) {
+    // Delete the activity
+    $deleteActivity = deleteRecordById('activities', $activityId);
+    if ($deleteActivity) {
         $response['success'] = true;
-        $response['message'] = 'Subject deleted successfully!';
+        $response['message'] = 'Activity deleted successfully!';
     } else {
-        $response['message'] = 'Error deleting subject';
+        $response['message'] = 'Error deleting activity';
     }
 } catch (Exception $e) {
 

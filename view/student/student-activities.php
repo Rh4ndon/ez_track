@@ -555,9 +555,10 @@
                 <i class="fas fa-bars"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="activityDropdown">
-                <li><a class="dropdown-item" href="student-activities.php"><i class="fas fa-tasks"></i> Activities</a></li>
-                <li><a class="dropdown-item" href="student-exam-quiz.html"><i class="fas fa-clipboard-check"></i> Exams and Quizzes</a></li>
-                <li><a class="dropdown-item" href="student-performance.html"><i class="fas fa-chart-line"></i> Performance Task</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="changeTitle('activity')">Activities</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="changeTitle('quiz')">Quizzes</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="changeTitle('exam')">Exams</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="changeTitle('performance')">Performance Task</a></li>
             </ul>
         </div>
     </nav>
@@ -617,14 +618,19 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Background Music
+        // Student and subject data from session storage
+        const studentId = localStorage.getItem('id');
+        const subjectId = sessionStorage.getItem('subject_id');
+        const activityType = sessionStorage.getItem('type') || 'activity';
+
+        // Background Music (keep existing code)
         let bgMusic = new Audio('../sounds/game-music-loop-7.mp3');
         bgMusic.loop = true;
         bgMusic.volume = 0.3;
         let isMuted = true;
 
         let winMusic = new Audio('../sounds/small-win.mp3');
-        winMusic.volume = 0.5;
+        winMusic.volume = 1.0;
 
         let progressSound = new Audio('../sounds/win-chime.mp3');
         progressSound.volume = 0.5;
@@ -685,64 +691,193 @@
             }
         }
 
+        // Fetch and populate activity data
+        async function loadActivityData() {
+            try {
+                // Show loading state
+                const activityTable = document.getElementById('activityTable');
+                activityTable.innerHTML = '<tr><td colspan="2" class="text-center py-5">Loading activities...</td></tr>';
+
+                // Fetch data from your PHP API
+                const response = await fetch(`../../controllers/student/get-student-progress.php?subject_id=${subjectId}&student_id=${studentId}&type=${activityType}`);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const studentData = await response.json();
+
+                // Clear loading message
+                activityTable.innerHTML = '';
+
+                // Populate the table with activities
+                if (studentData.activities && studentData.activities.length > 0) {
+                    studentData.activities.forEach(activity => {
+                        const row = document.createElement('tr');
+
+                        // Add animation delay based on index
+                        const delay = (activity.activity_index * 0.1) + 's';
+                        row.style.animationDelay = delay;
+
+                        // Activity name cell
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = `${activity.activity_index}. ${activity.activity_name}`;
+
+                        // Status cell with checkbox
+                        const statusCell = document.createElement('td');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'activity-checkbox';
+                        checkbox.dataset.activityId = activity.activity_id;
+                        checkbox.dataset.studentId = studentId;
+
+                        // Check if activity is completed (progress = '1')
+                        if (activity.progress === '1') {
+                            checkbox.checked = true;
+                        }
+
+                        // Add event listener for checkbox changes
+                        checkbox.addEventListener('change', function() {
+                            updateActivityProgress(this, activity.activity_id);
+                            updateProgress();
+
+                            // Add animation to the row when checkbox is clicked
+                            if (this.checked) {
+                                row.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1))';
+                                row.style.animation = 'rowEntry 0.6s ease-out backwards';
+                            } else {
+                                row.style.background = '';
+                            }
+                        });
+
+                        statusCell.appendChild(checkbox);
+
+                        // Append cells to row
+                        row.appendChild(nameCell);
+                        row.appendChild(statusCell);
+
+                        // Append row to table
+                        activityTable.appendChild(row);
+                    });
+                } else {
+                    // No activities found
+                    activityTable.innerHTML = '<tr><td colspan="2" class="text-center py-5">No activities found for this subject.</td></tr>';
+                }
+
+                // Update progress after loading
+                updateProgress();
+
+            } catch (error) {
+                console.error('Error loading activity data:', error);
+                const activityTable = document.getElementById('activityTable');
+                activityTable.innerHTML = '<tr><td colspan="2" class="text-center py-5 text-danger">Error loading activities. Please try again.</td></tr>';
+            }
+        }
+
+        // Update activity progress via API
+        async function updateActivityProgress(checkbox, activityId) {
+            const progressValue = checkbox.checked ? '1' : '0';
+            const studentId = checkbox.dataset.studentId;
+
+            try {
+                const formData = new FormData();
+                formData.append('student_id', studentId);
+                formData.append('activity_id', activityId);
+                formData.append('progress', progressValue);
+
+                const response = await fetch('../../controllers/student/update-progress.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update progress');
+                }
+
+                const result = await response.json();
+                if (!result.success) {
+                    console.error('Progress update failed:', result.message);
+                    // Revert checkbox if update failed
+                    checkbox.checked = !checkbox.checked;
+                }
+
+            } catch (error) {
+                console.error('Error updating progress:', error);
+                // Revert checkbox on error
+                checkbox.checked = !checkbox.checked;
+            }
+        }
+
         // Progress tracking
         function updateProgress() {
             const checkboxes = document.querySelectorAll('.activity-checkbox');
             const checked = document.querySelectorAll('.activity-checkbox:checked').length;
             const total = checkboxes.length;
-            const percentage = Math.round((checked / total) * 100);
+            const percentage = total > 0 ? Math.round((checked / total) * 100) : 0;
 
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = percentage + '%';
             progressBar.setAttribute('aria-valuenow', percentage);
-            progressBar.textContent = `${checked}/${total} Complete`;
+            progressBar.textContent = total > 0 ? `${checked}/${total} Complete` : 'No Activities';
 
             const badge = document.getElementById('completionBadge');
-            if (percentage === 100) {
+            if (percentage === 100 && total > 0) {
                 badge.innerHTML = '<i class="fas fa-trophy"></i> All Complete! Amazing! 🎉';
                 badge.style.background = 'linear-gradient(135deg, #ffd700, #ff8c00)';
-                winMusic.play().catch(e => console.log('Audio play failed:', e));
-            } else if (percentage >= 66) {
+                if (!isMuted) winMusic.play().catch(e => console.log('Audio play failed:', e));
+            } else if (percentage >= 66 && total > 0) {
                 badge.innerHTML = '<i class="fas fa-fire"></i> Almost There! 🔥';
                 badge.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-                progressSound.play().catch(e => console.log('Audio play failed:', e));
-            } else if (percentage >= 33) {
+                if (!isMuted) progressSound.play().catch(e => console.log('Audio play failed:', e));
+            } else if (percentage >= 33 && total > 0) {
                 badge.innerHTML = '<i class="fas fa-star"></i> Good Progress! ⭐';
                 badge.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
-                progressSound.play().catch(e => console.log('Audio play failed:', e));
-            } else {
+                if (!isMuted) progressSound.play().catch(e => console.log('Audio play failed:', e));
+            } else if (total > 0) {
                 badge.innerHTML = '<i class="fas fa-rocket"></i> Keep Going! 🚀';
                 badge.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            } else {
+                badge.innerHTML = '<i class="fas fa-info-circle"></i> No Activities Available';
+                badge.style.background = 'linear-gradient(135deg, #6b7280, #4b5563)';
             }
-
         }
 
-        // Initialize animations
+        // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
             createFloatingStars();
             createParticles();
-            updateProgress();
 
-            // Add event listeners to checkboxes
-            const checkboxes = document.querySelectorAll('.activity-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    updateProgress();
+            // Load activity data
+            loadActivityData();
 
-                    // Add animation to the row when checkbox is clicked
-                    const row = this.closest('tr');
-                    if (this.checked) {
-                        row.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1))';
-                    } else {
-                        row.style.background = '';
-                    }
-                });
-            });
+            // Set navigation titles
+            document.getElementById('navCenterLogo').textContent = sessionStorage.getItem('subject') || 'Subject';
 
-            document.getElementById('navCenterLogo').textContent = sessionStorage.getItem('subject');
-            document.getElementById('navCenterSpan').textContent = sessionStorage.getItem('type');
-            document.getElementById('pageTitle').textContent = sessionStorage.getItem('type');
+            const type = sessionStorage.getItem('type') || 'activity';
+            let typeText = 'ACTIVITIES';
+            switch (type) {
+                case 'activity':
+                    typeText = 'ACTIVITIES';
+                    break;
+                case 'performance':
+                    typeText = 'PERFORMANCE';
+                    break;
+                case 'quiz':
+                    typeText = 'QUIZZES';
+                    break;
+                case 'exam':
+                    typeText = 'EXAMS';
+                    break;
+            }
+
+            document.getElementById('navCenterSpan').textContent = typeText;
+            document.getElementById('pageTitle').textContent = typeText;
         });
+
+        function changeTitle(type) {
+            sessionStorage.setItem('type', type);
+            window.location.reload();
+        }
     </script>
 </body>
 
