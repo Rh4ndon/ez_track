@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id = $_GET['id'] ?? null;
+    $student_id = $_GET['student_id'] ?? null;
 
     if (!$id) {
         header('Content-Type: application/json');
@@ -25,10 +26,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $subjects = getAllRecords('subjects', 'WHERE grade_level = ' . $section['grade_level'] . ' ORDER BY subject_name ASC');
 
     foreach ($subjects as $key => $subject) {
+        // Get all activities for this subject
+        $activities = getAllRecords('activities', 'WHERE subject_id = ' . $subject['id']);
+        $unfinished = 0;
+
+        foreach ($activities as $activity) {
+            // Check if student has an unfinished progress record for this activity
+            $student_progress = getRecord(
+                'student_progress',
+                'activity_id = ' . $activity['id'] . ' 
+                 AND student_id = ' . $student_id . ' 
+                 AND progress = "0"'
+            );
+
+            if ($student_progress) {
+                $unfinished++;
+            }
+        }
+
+        // Only add unfinished count if there are unfinished activities
+        if ($unfinished > 0) {
+            $subjects[$key]['unfinished'] = $unfinished;
+        }
+
         // Get ALL schedules for this subject and section
         $schedules = getAllRecords('schedules', 'WHERE subject_id = ' . $subject['id'] . ' AND section_id = ' . $section['id']);
-
-        // Store all schedules as an array
         $subjects[$key]['schedules'] = $schedules;
     }
 

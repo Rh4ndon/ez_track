@@ -478,71 +478,7 @@
             <!-- Will be populated by JavaScript -->
         </div>
 
-        <script>
-            // Function to escape HTML special characters
-            function escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
 
-            // Function to fetch and display subjects
-            async function loadSubjects() {
-                try {
-                    const response = await fetch('../../controllers/student/get-subjects.php?id=' + localStorage.getItem('section'));
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-
-                    // Check if data has the expected structure
-                    if (!data.subjects || !Array.isArray(data.subjects)) {
-                        throw new Error('Invalid data structure received');
-                    }
-
-                    const container = document.getElementById('subject-container');
-
-                    // Generate HTML for each subject
-                    container.innerHTML = data.subjects.map(subject => `
-                        <div class="subject-card" onclick="subjectRedirect('${escapeHtml(subject.id)}', '${escapeHtml(subject.grade_level + '-' + subject.subject_name)}')">
-                          
-                            <div class="subject-icon">
-                                ${subject.icon}
-                            </div>
-                            <h3 class="subject-name">${escapeHtml(subject.grade_level + '-' + subject.subject_name)}</h3>
-                            <p class="subject-abbr">${escapeHtml(subject.description)}</p>
-                            <p class="subject-abbr">${escapeHtml(subject.schedules.day_of_week)}</p>
-                        </div>
-                    `).join('');
-
-                } catch (error) {
-                    console.error('Error loading subjects:', error);
-
-                    // Show error message to user
-                    const container = document.getElementById('subject-container');
-                    if (container) {
-                        container.innerHTML = `
-                <div class="error-message" style="text-align: center; padding: 2rem; color: #666; width: 100%;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
-                    <p style="font-size: 1.1rem;">Failed to load subjects. Please try again later.</p>
-                    <button onclick="loadSubjects()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #4a90e2; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Retry
-                    </button>
-                </div>
-            `;
-                    }
-                }
-            }
-
-            // Start loading subjects when page is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadSubjects);
-            } else {
-                loadSubjects(); // DOM already loaded
-            }
-        </script>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -651,6 +587,70 @@
             sessionStorage.setItem('subject', subject);
             sessionStorage.setItem('type', 'activity');
             window.location.href = 'student-activities.php';
+        }
+
+        // Function to escape HTML special characters
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Function to fetch and display subjects
+        async function loadSubjects() {
+            try {
+                const response = await fetch('../../controllers/student/get-subjects.php?id=' + localStorage.getItem('section') + '&student_id=' + localStorage.getItem('id'));
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Check if data has the expected structure
+                if (!data.subjects || !Array.isArray(data.subjects)) {
+                    throw new Error('Invalid data structure received');
+                }
+
+                const container = document.getElementById('subject-container');
+
+                // Generate HTML for each subject
+                container.innerHTML = data.subjects.map(subject => `
+                        <div class="subject-card" onclick="subjectRedirect('${escapeHtml(subject.id)}', '${escapeHtml(subject.grade_level + '-' + subject.subject_name)}')">
+                        ${subject.unfinished ? `<div class="level-badge">${subject.unfinished}</div>` : ''}
+                            <div class="subject-icon">
+                                ${subject.icon}
+                            </div>
+                            <h3 class="subject-name">${escapeHtml(subject.grade_level + '-' + subject.subject_name)}</h3>
+                            <p class="subject-abbr">${escapeHtml(subject.description)}</p>
+                            <p class="subject-abbr">${escapeHtml(subject.schedules.day_of_week)}</p>
+                        </div>
+                    `).join('');
+
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+
+                // Show error message to user
+                const container = document.getElementById('subject-container');
+                if (container) {
+                    container.innerHTML = `
+                <div class="error-message" style="text-align: center; padding: 2rem; color: #666; width: 100%;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                    <p style="font-size: 1.1rem;">Failed to load subjects. Please try again later.</p>
+                    <button onclick="loadSubjects()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #4a90e2; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Retry
+                    </button>
+                </div>
+            `;
+                }
+            }
+        }
+
+        // Start loading subjects when page is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadSubjects);
+        } else {
+            loadSubjects(); // DOM already loaded
         }
     </script>
 </body>
