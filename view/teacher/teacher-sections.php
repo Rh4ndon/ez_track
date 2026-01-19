@@ -169,6 +169,7 @@
 
 
         </div>
+        <script src="../js/show-alert.js"></script>
 
         <script>
             // Function to escape HTML special characters

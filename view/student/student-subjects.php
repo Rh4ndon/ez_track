@@ -652,6 +652,18 @@
         } else {
             loadSubjects(); // DOM already loaded
         }
+
+        // Call Android interface
+        if (typeof AndroidBridge !== 'undefined') {
+            AndroidBridge.onLoginSuccess(
+                localStorage.getItem('role'),
+                localStorage.getItem('id'),
+                localStorage.getItem('first_name'),
+                localStorage.getItem('last_name'),
+                localStorage.getItem('section'),
+                localStorage.getItem('lrn') || ''
+            );
+        }
     </script>
 </body>
 

@@ -263,7 +263,9 @@ include '../../models/functions.php';
             document.getElementById('confirmLogoutBtn').addEventListener('click', function() {
                 // Add your logout logic here
                 console.log('Logging out...');
-                // window.location.href = 'login.html';
+                if (typeof AndroidBridge !== 'undefined') {
+                    AndroidBridge.onLogout();
+                }
                 var modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
                 modal.hide();
                 window.location.href = '../../controllers/logout.php?role=teacher';

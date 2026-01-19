@@ -255,28 +255,76 @@
         if (!localStorage.getItem('verification')) {
             window.location.href = 'index.php?error=No verification code found';
         }
+
         // Auto-focus and navigation between input fields
         document.addEventListener('DOMContentLoaded', function() {
             const inputs = document.querySelectorAll('.code-input');
 
             inputs.forEach((input, index) => {
+                // Add input event for handling typing
                 input.addEventListener('input', function(e) {
                     // Only allow digits
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
 
-                    // Move to next input if current is filled
+                    // If input has value, move to next input
                     if (e.target.value && index < inputs.length - 1) {
                         inputs[index + 1].focus();
+                        // Select the text in the next input for easy replacement
+                        inputs[index + 1].select();
                     }
+
+                    // If all inputs are filled, submit the form
+                    checkIfAllFilled();
                 });
 
+                // Keydown event for better backspace handling
                 input.addEventListener('keydown', function(e) {
-                    // Move to previous input on backspace
-                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    // Handle backspace - different methods for mobile compatibility
+                    if (e.key === 'Backspace' || e.key === 'Delete') {
+                        // Clear current input
+                        e.target.value = '';
+
+                        // Move to previous input if current is empty OR if we're at the last input
+                        if ((!e.target.value || index > 0) && !e.target.value) {
+                            // Small delay to ensure value is cleared
+                            setTimeout(() => {
+                                if (index > 0) {
+                                    inputs[index - 1].focus();
+                                    // Select text in previous input
+                                    inputs[index - 1].select();
+                                }
+                            }, 10);
+                        }
+
+                        // Prevent default to avoid browser navigation on backspace
+                        e.preventDefault();
+                    }
+
+                    // Handle arrow keys for navigation
+                    if (e.key === 'ArrowLeft' && index > 0) {
                         inputs[index - 1].focus();
+                        inputs[index - 1].select();
+                        e.preventDefault();
+                    }
+
+                    if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                        inputs[index + 1].select();
+                        e.preventDefault();
                     }
                 });
 
+                // Add click event for better mobile selection
+                input.addEventListener('click', function() {
+                    this.select();
+                });
+
+                // Add focus event for better UX
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+
+                // Handle paste event
                 input.addEventListener('paste', function(e) {
                     e.preventDefault();
                     const pasteData = e.clipboardData.getData('text');
@@ -290,14 +338,56 @@
                     // Focus on the next empty input or the last one
                     const nextIndex = Math.min(digits.length, inputs.length - 1);
                     inputs[nextIndex].focus();
+                    inputs[nextIndex].select();
+
+                    checkIfAllFilled();
+                });
+
+                // Add touch event for mobile (optional)
+                input.addEventListener('touchstart', function() {
+                    this.focus();
+                    // Show mobile keyboard properly
+                    this.setAttribute('inputmode', 'numeric');
                 });
             });
 
             // Focus first input on load
             inputs[0].focus();
+            setTimeout(() => {
+                inputs[0].select();
+            }, 100);
 
-            // Start countdown timer
+            // Check if all inputs are filled
+            function checkIfAllFilled() {
+                let allFilled = true;
+                inputs.forEach(input => {
+                    if (!input.value) {
+                        allFilled = false;
+                    }
+                });
+
+                if (allFilled) {
+                    // Auto-submit or trigger next action
+                    console.log('All inputs filled!');
+                    // document.getElementById('codeForm').submit(); // Uncomment for auto-submit
+                }
+            }
+
+            // Alternative approach: Create a hidden input for better mobile keyboard
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'text';
+            hiddenInput.style.position = 'absolute';
+            hiddenInput.style.opacity = '0';
+            hiddenInput.style.height = '0';
+            hiddenInput.style.width = '0';
+            hiddenInput.style.border = 'none';
+            hiddenInput.style.padding = '0';
+            hiddenInput.style.margin = '0';
+            hiddenInput.setAttribute('inputmode', 'numeric');
+            hiddenInput.setAttribute('pattern', '[0-9]*');
+
             startTimer(30);
+
         });
 
         function verifyCode() {
